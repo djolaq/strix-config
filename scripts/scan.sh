@@ -1,18 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Wrapper Strix pour ce projet.
-# Charge .env (secrets) puis lance `strix` avec la config du projet.
+# Strix wrapper for this project.
+# Resolves the LLM backend from your live opencode configuration
+# (scripts/opencode-env.sh), loads .env if present, then runs `strix` with the
+# project config file.
 #
 # Usage:
-#   scripts/scan.sh [args...]        passe les arguments tels quels à strix
-#   TARGETS=... scripts/scan.sh      cible par défaut via la variable TARGETS
+#   scripts/scan.sh [args...]        passes arguments straight through to strix
+#   TARGETS=... scripts/scan.sh      default target via the TARGETS variable
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 CONFIG_FILE="${STRIX_CONFIG_FILE:-$PROJECT_ROOT/strix.config.json}"
 
-# Charge .env s'il existe (sans écraser les variables déjà exportées).
+# Load .env if present (without overriding already-exported variables).
 if [[ -f "$PROJECT_ROOT/.env" ]]; then
   set -a
   # shellcheck disable=SC1091
@@ -20,17 +22,22 @@ if [[ -f "$PROJECT_ROOT/.env" ]]; then
   set +a
 fi
 
-# Vérifications de base.
-command -v strix >/dev/null 2>&1 || { echo "strix introuvable. Lancez: make setup" >&2; exit 1; }
+# Resolve base URL, model and API key from the opencode configuration.
+eval "$("$SCRIPT_DIR/opencode-env.sh")"
 
 if [[ -z "${LLM_API_KEY:-}" ]]; then
-  echo "ERREUR : LLM_API_KEY non définie. Renvoie vers Makefile->env ou opencode providers login." >&2
+  echo "ERROR: no LLM API key found. Run 'opencode providers login' or set LLM_API_KEY in .env." >&2
   exit 1
 fi
 
-echo "→ Config Strix : $CONFIG_FILE"
-echo "→ Modèle LLM    : $STRIX_LLM ($LLM_API_BASE)"
-echo "→ Cible         : ${TARGETS:-<à passer en args>}"
+command -v strix >/dev/null 2>&1 || { echo "strix not found. Run: make setup" >&2; exit 1; }
+
+echo "→ Strix config : $CONFIG_FILE"
+echo "→ Model        : ${STRIX_LLM:-(unset)}"
+echo "→ Endpoint     : $(printf '%s' "${LLM_API_BASE:-(unset)}" | sed -E 's#(https?://[^/]+)/.*#\1/***#')"
+# Redact the key, only show that it is set.
+echo "→ API key      : configured ✓"
+echo "→ Target       : ${TARGETS:-<pass as args>}"
 echo
 
-exec strix --config "$CONFIG_FILE" ${TARGETS:+-t "$TARGETS"} "$@"
+LLM_API_KEY="$LLM_API_KEY" exec strix --config "$CONFIG_FILE" ${TARGETS:+-t "$TARGETS"} "$@"
