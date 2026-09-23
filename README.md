@@ -22,7 +22,7 @@ files live and exports:
 Strix then hits the same endpoint with the same model you use in opencode — no extra setup.
 
 ```
-Strix agents  ──►  your opencode LLM provider (OpenAI-compatible endpoint)
+Strix agents  ──►  your opencode LLM provider (OpenAI-compatible endpoint) — signed commits
                     STRIX_LLM     = openai/<model-id from opencode.jsonc>
                     LLM_API_KEY   = from opencode auth.json
 ```
