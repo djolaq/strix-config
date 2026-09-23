@@ -1,0 +1,12 @@
+# Secrets
+.env
+*.local
+
+# Strix run outputs (scans, reports, viewer data)
+strix_runs/
+
+# Fichiers générés localement
+targets.txt
+
+# OS / editors
+.DS_Store

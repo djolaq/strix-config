@@ -1,0 +1,9 @@
+{
+  "env": {
+    "STRIX_LLM": "openai/big-pickle",
+    "LLM_API_BASE": "https://opencode.ai/zen/v1",
+    "LLM_TIMEOUT": "600",
+    "STRIX_REASONING_EFFORT": "high",
+    "STRIX_LLM_MAX_RETRIES": "5"
+  }
+}

@@ -1,0 +1,18 @@
+# Déclarez ici vos cibles de test, une par ligne.
+# Les lignes commençant par '#' sont ignorées.
+#
+# Types supportés :
+#   - répertoire local          ./app
+#   - dépôt GitHub              https://github.com/org/app
+#   - application web           https://staging.example.com
+#   - domaine / IP              example.com  /  10.0.0.5
+#   - spec API (OpenAPI/Swagger) ./openapi.yaml  (à associer à l'URL live)
+#   - collection Postman        postman://<collection-uuid>?env=<environment-uuid>
+
+# ---- Exemples (décommentez et adaptez) ----
+
+#./app
+#https://github.com/djolaq/strix-config
+#https://staging.example.com
+#./openapi.yaml
+#https://api.example.com
